@@ -14,6 +14,9 @@ namespace DatingApp.API
     using Microsoft.Extensions.Options;
     using DatingApp.API.Data;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.AspNetCore.Authentication.JwtBearer;
+    using Microsoft.IdentityModel.Tokens;
+    using System.Text;
 
     public class Startup
     {
@@ -31,9 +34,25 @@ namespace DatingApp.API
             services.AddDbContext<Datacontext>(x =>x.UseSqlite(Configuration.GetConnectionString("DefaultConnction")));
 
             services.AddMvc();
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
 
             //get info from localhostt500 and share to localhost4200
             services.AddCors();  
+
+            services.AddScoped<IAuthRepository, AuthRepository>();
+
+            //authenfication tiwh tokens - middleware
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
+                    .GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +65,8 @@ namespace DatingApp.API
             
             //get info from localhostt500 and share to localhost4200
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+            app.UseAuthentication();    
 
             app.UseMvc();
         }
