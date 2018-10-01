@@ -50,6 +50,7 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody]UserForLoginDto userForLoginDto)
         {
+           
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
