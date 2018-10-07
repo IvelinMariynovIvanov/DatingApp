@@ -11,8 +11,8 @@ namespace DatingApp.API.Data
 
     public class AuthRepository : IAuthRepository
     {
-        private readonly Datacontext _context;
-        public AuthRepository(Datacontext context)
+        private readonly DataContext _context;
+        public AuthRepository(DataContext context)
         {
             this._context = context;
         }

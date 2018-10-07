@@ -25,18 +25,20 @@ namespace DatingApp.API
 
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration) //, IHostingEnvironment env) //,  
         {
             Configuration = configuration;
+           // Env = env;
         }
 
         public IConfiguration Configuration { get; }
+        public IHostingEnvironment Env {get;}
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddDbContext<Datacontext>(x =>x.UseSqlite("ConnectionString"));
-            services.AddDbContext<Datacontext>(x =>x.UseSqlite(Configuration.GetConnectionString("DefaultConnction")));
+            services.AddDbContext<DataContext>(x =>x.UseSqlite(Configuration.GetConnectionString("DefaultConnction")));
 
             services.AddMvc().AddJsonOptions(opt => {
                 opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -46,7 +48,8 @@ namespace DatingApp.API
             //get info from localhostt500 and share to localhost4200
             services.AddCors();
 
-            services.AddAutoMapper();
+            // Mapper.Reset();
+             services.AddAutoMapper();
 
             services.AddTransient<Seed>();  
 
@@ -70,12 +73,15 @@ namespace DatingApp.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, Seed seeder)
         {
+    
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                Mapper.Reset();
             }
-            else
+           else
             {
+                
                 // Setting a global exception handler
                 app.UseExceptionHandler(builder => {
                     builder.Run(async context=> {

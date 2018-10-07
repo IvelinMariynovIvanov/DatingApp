@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DatingApp.API.Migrations
 {
-    [DbContext(typeof(Datacontext))]
+    [DbContext(typeof(DataContext))]
     partial class DatacontextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -23,7 +23,8 @@ namespace DatingApp.API.Migrations
 
                     b.Property<DateTime>("DateAdded");
 
-                    b.Property<string>("Descripton");
+                    b.Property<string>("Description")
+                        .HasColumnName("Description");
 
                     b.Property<bool>("IsMain");
 
