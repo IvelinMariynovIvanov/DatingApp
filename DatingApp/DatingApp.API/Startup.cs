@@ -48,6 +48,9 @@ namespace DatingApp.API
             //get info from localhostt500 and share to localhost4200
             services.AddCors();
 
+            // bind CloudinarySettings properties with appsetings.json values
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+
             // Mapper.Reset();
              services.AddAutoMapper();
 

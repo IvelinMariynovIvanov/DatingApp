@@ -11,16 +11,19 @@ namespace DatingApp.API.Controllers
     using System.Text;
     using System;
     using System.IdentityModel.Tokens.Jwt;
+    using AutoMapper;
 
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthRepository _repo;
         private readonly IConfiguration _config;
+        private readonly IMapper _mapper;
 
-        public AuthController(IAuthRepository repo, IConfiguration config)
+        public AuthController(IAuthRepository repo, IConfiguration config, IMapper mapper)
         {
             _config = config;
+            _mapper = mapper;
             _repo = repo;
         }
 
@@ -80,7 +83,13 @@ namespace DatingApp.API.Controllers
 
             var token = tokehandler.CreateToken(tokenDescriptor);
 
-            return Ok( new {token = tokehandler.WriteToken(token)});
+            var user = _mapper.Map<UserForListDto>(userFromRepo);
+
+            return Ok( new
+                 {
+                     token = tokehandler.WriteToken(token),
+                     user
+                });
         }
     }
 }
