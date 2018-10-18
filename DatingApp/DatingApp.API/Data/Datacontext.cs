@@ -20,6 +20,8 @@ namespace DatingApp.API.Data
 
         public DbSet<Like> Likes {get;set;}
 
+        public DbSet<Message> Messages {get;set;}
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             // set composite prmary key
@@ -36,6 +38,16 @@ namespace DatingApp.API.Data
                 .WithMany(u => u.Likees)
                 .HasForeignKey(u => u.LikerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Message>()
+            .HasOne(m => m.Sender)
+            .WithMany(m => m.MessagesSent)
+            .OnDelete(DeleteBehavior.Restrict);    
+
+            builder.Entity<Message>()
+            .HasOne(m =>m.Recepient)
+            .WithMany(m =>m.MessagesReceived)
+            .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

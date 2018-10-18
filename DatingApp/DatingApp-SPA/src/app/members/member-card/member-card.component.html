@@ -10,7 +10,7 @@
           <i class="fa fa-heart" (click)="sendLike(user.id)"></i>
         </button>
         <button class="btn btn-primary ml-2">
-          <i class="fa fa-envelope"></i>
+          <i class="fa fa-envelope" [routerLink]="['/members/', user.id]" [queryParams] = "{tab: 3}"></i>
         </button>
       </li>
     </ul>

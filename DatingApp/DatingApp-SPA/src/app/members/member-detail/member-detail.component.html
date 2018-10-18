@@ -27,14 +27,16 @@
         <div class="card-footer">
           <div class="btn-group d-flex">
             <button class="btn btn-primary w-100">Like</button>
-            <button class="btn btn-success w-100">Message</button>
+            <!-- MessageTabId - 3 - like array; AboutTabId - 0 -->
+            <button class="btn btn-success w-100" (click) = "selectTab(3)">Message</button>
           </div>
         </div>
       </div>
     </div>
     <div class="col-sm-8">
       <div class="tab-panel">
-        <tabset class="member-tabset">
+        <!--  #memberTabs = template reference variable -->
+        <tabset class="member-tabset" #memberTabs>
           <tab heading="About {{user.knownAs}}">
             <h4>Description</h4>
             <p>{{user?.introduction}}</p>
@@ -50,7 +52,10 @@
             <ngx-gallery [options]="galleryOptions" [images]="galleryImages"></ngx-gallery>
           </tab>
           <tab heading="Messages">
-            <p>Mesasges will go here</p>
+            <!-- pass id to input property repepinetId in member-messages component --> 
+            <app-member-messages [recepientId]= "user.id">
+
+            </app-member-messages>
           </tab>
         </tabset>
       </div>
