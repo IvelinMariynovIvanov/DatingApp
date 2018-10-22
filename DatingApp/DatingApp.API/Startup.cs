@@ -38,6 +38,46 @@ namespace DatingApp.API
         public void ConfigureServices(IServiceCollection services)
         {
             //services.AddDbContext<Datacontext>(x =>x.UseSqlite("ConnectionString"));
+            services.AddDbContext<DataContext>(x =>x.UseMySql(Configuration.GetConnectionString("DefaultConnction")));
+
+            services.AddMvc().AddJsonOptions(opt => {
+                opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            });
+            //services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+
+            //get info from localhostt500 and share to localhost4200
+            services.AddCors();
+
+            // bind CloudinarySettings properties with appsetings.json values
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
+
+            // Mapper.Reset();
+             services.AddAutoMapper();
+
+            services.AddTransient<Seed>();  
+
+            services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IDatingRepository, DataRepository>();
+
+            //authenfication tiwh tokens - middleware
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII
+                    .GetBytes(Configuration.GetSection("AppSettings:Token").Value)),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
+            services.AddScoped<LogUserActivity>();
+        }
+
+        public void ConfigureDevelopmentServices(IServiceCollection services)
+        {
+            //services.AddDbContext<Datacontext>(x =>x.UseSqlite("ConnectionString"));
             services.AddDbContext<DataContext>(x =>x.UseSqlite(Configuration.GetConnectionString("DefaultConnction")));
 
             services.AddMvc().AddJsonOptions(opt => {
@@ -106,11 +146,25 @@ namespace DatingApp.API
            // seeder.SeedUsers();
 
             //get info from localhostt500 and share to localhost4200
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            // app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
-            app.UseAuthentication();    
+            app.UseCors(x => x.WithOrigins("http://localhost:4200")
+            .AllowAnyMethod().AllowAnyHeader().AllowCredentials());
+            
 
-            app.UseMvc();
+            app.UseAuthentication();
+
+            // index.html
+            app.UseDefaultFiles();    
+
+            app.UseStaticFiles();
+
+            app.UseMvc( routes => {
+                routes.MapSpaFallbackRoute(
+                    name: "spa-fallback",
+                    defaults: new { controller = "FallBack", action = "Index"}
+                );
+            });
         }
     }
 }
